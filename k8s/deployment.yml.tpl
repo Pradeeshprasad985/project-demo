@@ -1,0 +1,39 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "demo-app",
+    "labels": {
+      "app": "demo"
+    }
+  },
+  "spec": {
+    "replicas": 2,
+    "selector": {
+      "matchLabels": {
+        "app": "demo"
+      }
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "demo"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "app",
+            "image": "IMAGE_PLACEHOLDER",
+            "ports": [
+              {
+                "containerPort": 80
+              }
+            ],
+            "imagePullPolicy": "Always"
+          }
+        ]
+      }
+    }
+  }
+}
