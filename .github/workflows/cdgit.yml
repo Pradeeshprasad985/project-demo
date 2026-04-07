@@ -1,0 +1,32 @@
+name: Deploy to EKS
+
+on:
+  workflow_run:
+    workflows: ["Build & Push"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-south-1
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name demo-eks
+
+      - name: Replace Image Tag
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}:${{ github.sha }}
+          sed "s|IMAGE_PLACEHOLDER|$IMAGE|g" k8s/deployment.yaml.tpl > k8s/deployment.yaml
+
+      - name: Deploy
+        run: kubectl apply -f k8s/deployment.yaml
