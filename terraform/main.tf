@@ -4,20 +4,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"   # ✅ Compatible with EKS v20
+      version = "~> 5.0"
     }
   }
 }
 
-# 🔹 AWS Provider
 provider "aws" {
   region = "ap-south-1"
 }
 
-# 🔹 VPC Module
+# ✅ FIXED VPC VERSION
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 6.0"
+  version = "~> 5.0"   # 🔥 DOWNGRADED
 
   name = "eks-vpc"
   cidr = "10.0.0.0/16"
@@ -35,7 +34,6 @@ module "vpc" {
   }
 }
 
-# 🔹 EKS Module
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
@@ -44,7 +42,7 @@ module "eks" {
   cluster_version = "1.29"
 
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets   # ✅ Correct argument
+  subnet_ids = module.vpc.private_subnets
 
   enable_irsa = true
 
